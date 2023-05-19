@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CitasApp</string>
+    <string name="invalid_password">Contraseña Invalida!!!</string>
+    <string name="invalid_username">DNI Invalido!!!</string>
+</resources>
