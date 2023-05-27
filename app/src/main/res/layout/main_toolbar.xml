@@ -12,16 +12,16 @@
         android:layout_height="wrap_content"
         android:onClick="ClickMenu"
         android:src="@drawable/ic_menu" />
-    
+
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Hospital Marino Molina Citas"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:paddingLeft="20dp"
+        android:text="Hospital Virgen de Fatima"
         android:textColor="#ffffff"
-        android:paddingLeft="20dp" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:layout_width="wrap_content"

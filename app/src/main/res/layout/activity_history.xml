@@ -37,10 +37,19 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/historyCards"
-            tools:listitem="@layout/design_history"
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/design_history" />
+
+        <TextView
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8sp"
+            android:text="No Hay Historial Disponible"
+            android:textSize="20sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

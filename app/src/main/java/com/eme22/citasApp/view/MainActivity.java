@@ -11,22 +11,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.eme22.citasApp.databinding.ActivityMainBinding;
-import com.eme22.citasApp.model.pojo.Medic;
-import com.eme22.citasApp.model.pojo.Patient;
 import com.eme22.citasApp.model.pojo.User;
+import com.eme22.citasApp.model.pojo.medics.Medic;
+import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.viewmodel.MainViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static Medic doctor;
-    private static Patient patient;
+    private static com.eme22.citasApp.model.pojo.medics.Medic doctor;
+    private static com.eme22.citasApp.model.pojo.patients.Patient patient;
 
     private static Integer mode = 0;
     MainViewModel mainViewModel;

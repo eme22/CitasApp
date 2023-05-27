@@ -1,21 +1,25 @@
 package com.eme22.citasApp.viewmodel;
 
-import android.util.Patterns;
-
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.eme22.citasApp.R;
+import com.eme22.citasApp.model.api.Api;
+import com.eme22.citasApp.model.api.ApiClient;
 import com.eme22.citasApp.model.login.LoginFormState;
 import com.eme22.citasApp.model.login.LoginResult;
-import com.eme22.citasApp.model.pojo.Patient;
-import com.eme22.citasApp.model.pojo.User;
-import com.eme22.citasApp.util.StringUtil;
+import com.eme22.citasApp.model.pojo.patients.Patient;
 
-import java.util.ArrayList;
+import org.apache.commons.codec.binary.Base64;
+
+import java.nio.charset.StandardCharsets;
 
 import lombok.extern.log4j.Log4j2;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @Log4j2
 public class LoginViewModel extends ViewModel {
@@ -31,30 +35,40 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
+    private final Api api = ApiClient.getSOService();
+
     public void login(String dni, String password) {
 
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            log.debug("");
-        }
+        password = new String(Base64.encodeBase64(password.getBytes(StandardCharsets.UTF_8)));
 
-        String testPassword = "123456";
+        String finalPassword = password;
+        api.getPatientByDNI(Integer.parseInt(dni)).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<Patient> call, @NonNull Response<Patient> response) {
 
-        if (dni.equals("75333323")){
+                    if (response.isSuccessful()) {
+                        Patient patient = response.body();
 
-            if (StringUtil.encodeToBase64(password).equals(StringUtil.encodeToBase64(testPassword))) {
-                loginResult.setValue(LoginResult.Success(generateFakeUser()));
-                return;
-            }
+                        if (patient != null && finalPassword.equals(patient.getPasswordHash())) {
+                            loginResult.setValue(LoginResult.Success(patient));
+                            return;
 
-            loginResult.setValue(LoginResult.Failed(1));
+                        }
 
-        }
+                        loginResult.setValue(LoginResult.Failed(1));
+                        return;
+                    }
 
+                    loginResult.setValue(LoginResult.Failed(2));
+                }
 
-
-        loginResult.setValue(LoginResult.Failed(2));
+                @Override
+                public void onFailure(@NonNull Call<Patient> call, @NonNull Throwable t) {
+                    System.out.println("Failed");
+                    t.printStackTrace();
+                    loginResult.setValue(LoginResult.Failed(2));
+                }
+        });
 
     }
 
@@ -86,16 +100,4 @@ public class LoginViewModel extends ViewModel {
         return password != null && password.trim().length() > 5;
     }
 
-    private User generateFakeUser() {
-        Patient patient = new Patient();
-        patient.setHistoryList(new ArrayList<>());
-        patient.setDni("75333323");
-        patient.setName2("Jesus");
-        patient.setName1("Manuel");
-        patient.setLastName1("Salvatierra");
-        patient.setLastName2("Bejar");
-        patient.setAge(22);
-        patient.setAddress("Jr. Atahualpa 658 - Callao, Callao");
-        return patient;
-    }
 }
