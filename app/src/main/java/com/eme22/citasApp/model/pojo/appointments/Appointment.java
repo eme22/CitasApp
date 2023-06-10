@@ -6,6 +6,7 @@ import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.model.pojo.prescriptions.Prescription;
 import com.google.gson.annotations.Expose;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
 import lombok.ToString;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class Appointment{
 	@Expose
-	private String date;
+	private LocalDateTime date;
 	@Expose
 	private String result;
 	@Expose

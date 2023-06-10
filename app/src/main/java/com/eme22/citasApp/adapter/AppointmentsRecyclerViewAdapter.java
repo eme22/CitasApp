@@ -1,9 +1,10 @@
 package com.eme22.citasApp.adapter;
 
-import android.icu.text.SimpleDateFormat;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,26 +12,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eme22.citasApp.R;
-import com.eme22.citasApp.model.pojo.appointments.Appointment;
-import com.eme22.citasApp.model.pojo.specialities.Speciality;
+import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.squareup.picasso.Picasso;
 
-import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Locale;
 
-public class SpecialityRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final AppointmentsRecyclerViewAdapter.OnItemClicked listener;
+    private ArrayList<Pair<LocalDateTime, Boolean>> AppointmentArrayList;
 
-    private final SpecialityRecyclerViewAdapter.OnItemClicked listener;
-    private ArrayList<Speciality> AppointmentArrayList;
-
-    public SpecialityRecyclerViewAdapter(SpecialityRecyclerViewAdapter.OnItemClicked listener) {
+    public AppointmentsRecyclerViewAdapter(AppointmentsRecyclerViewAdapter.OnItemClicked listener) {
         this.listener = listener;
         this.AppointmentArrayList = new ArrayList<>();
     }
 
-    public SpecialityRecyclerViewAdapter(SpecialityRecyclerViewAdapter.OnItemClicked listener, ArrayList<Speciality> appointmentArrayList) {
+    public AppointmentsRecyclerViewAdapter(AppointmentsRecyclerViewAdapter.OnItemClicked listener, ArrayList<Pair<LocalDateTime, Boolean>> appointmentArrayList) {
         this.listener = listener;
         this.AppointmentArrayList = appointmentArrayList;
     }
@@ -39,19 +37,20 @@ public class SpecialityRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.design_specilaist,parent,false);
+        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.slot_design,parent,false);
         return new RecyclerViewViewHolder(rootView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        Speciality Appointment = AppointmentArrayList.get(position);
+        Pair<LocalDateTime, Boolean> Appointment = AppointmentArrayList.get(position);
         RecyclerViewViewHolder viewHolder= (RecyclerViewViewHolder) holder;
 
-        viewHolder.card_title.setText(Appointment.getName());
+        viewHolder.itemView.setEnabled(Appointment.second);
 
-        Picasso.get().load(Appointment.getImage()).into(((RecyclerViewViewHolder) holder).card_image);
+        viewHolder.date.setText(Appointment.first.getHour()+":"+Appointment.first.getMinute());
+
     }
 
     @Override
@@ -59,7 +58,7 @@ public class SpecialityRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
         return AppointmentArrayList.size();
     }
     
-   public void updateAppointmentList(final ArrayList<Speciality> AppointmentArrayList) {
+   public void updateAppointmentList(final ArrayList<Pair<LocalDateTime, Boolean>> AppointmentArrayList) {
         this.AppointmentArrayList.clear();
         this.AppointmentArrayList = AppointmentArrayList;
         notifyDataSetChanged();
@@ -67,18 +66,18 @@ public class SpecialityRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
 
     class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView card_image;
-        TextView card_title;
+        TextView date;
 
         public RecyclerViewViewHolder(@NonNull View itemView) {
             super(itemView);
-            card_title = itemView.findViewById(R.id.card_title);
-            card_image = itemView.findViewById(R.id.card_image);
+            date = itemView.findViewById(R.id.text_view);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(AppointmentArrayList.get(position));
+
+
+                    listener.onItemClick(AppointmentArrayList.get(position).first, itemView);
                 }
             });
 
@@ -86,7 +85,7 @@ public class SpecialityRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
     }
 
     public interface OnItemClicked {
-        void onItemClick(Speciality cartItem);
+        void onItemClick(LocalDateTime cartItem, View current);
     }
 
 }

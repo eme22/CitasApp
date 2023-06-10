@@ -16,7 +16,7 @@ public class SpecialityViewModel extends RecyclerViewViewModel<Speciality> {
 
     @Override
     public void init() {
-        api.getSpecialities(1, 100, null).enqueue(new Callback<>() {
+        api.getSpecialities(null, null, null).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<SpecialitiesResponse> call, Response<SpecialitiesResponse> response) {
 

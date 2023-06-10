@@ -19,22 +19,24 @@ public class DoctorListViewModel extends RecyclerViewViewModel<Medic> {
         Callback<MedicsResponse> callback = new Callback<>() {
             @Override
             public void onResponse(Call<MedicsResponse> call, Response<MedicsResponse> response) {
-
+                loadingMutableLivedata.setValue(false);
                 if (response.isSuccessful()) {
 
                     MedicsResponse appointmentsResponse = response.body();
 
                     itemsArrayList = new ArrayList<>(appointmentsResponse.getEmbedded().getMedics());
 
+                    listEmptyMutableLiveData.setValue(itemsArrayList.isEmpty());
+
                 }
 
                 listMutableLiveData.setValue(itemsArrayList);
-
             }
 
             @Override
             public void onFailure(Call<MedicsResponse> call, Throwable t) {
-
+                loadingMutableLivedata.setValue(false);
+                t.printStackTrace();
             }
         };
 
@@ -45,9 +47,10 @@ public class DoctorListViewModel extends RecyclerViewViewModel<Medic> {
         }
         else {
 
-            api.getMedics(1, 100, null).enqueue(callback);
+            api.getMedics(0, Integer.MAX_VALUE, null).enqueue(callback);
 
         }
+        loadingMutableLivedata.setValue(true);
     }
 
 }

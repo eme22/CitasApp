@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Logout");
         builder.setMessage("¿ Deseas deslogearte ?");
 
-        builder.setPositiveButton("Yes", (dialog, which) -> {
+        builder.setPositiveButton("Si", (dialog, which) -> {
             Toast.makeText(activity, "Deslogeado", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(activity, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

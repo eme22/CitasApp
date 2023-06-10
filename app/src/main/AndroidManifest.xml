@@ -15,6 +15,11 @@
         android:theme="@style/Theme.CitasApp"
         tools:targetApi="31">
         <activity
+            android:name=".view.ProcessAppointmentActivity"
+            android:exported="false"
+            android:label="@string/title_activity_process_appointment"
+            android:theme="@style/Theme.CitasApp" />
+        <activity
             android:name=".view.AppointMentPickActivity"
             android:exported="false" />
         <activity

@@ -24,6 +24,7 @@ public class ApiClient {
                     .client(client)
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
+                    .addConverterFactory(QueryConverterFactory.create())
                     .build();
         }
         return retrofit;

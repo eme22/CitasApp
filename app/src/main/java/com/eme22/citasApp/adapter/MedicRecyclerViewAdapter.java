@@ -36,7 +36,7 @@ public class MedicRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.design_history,parent,false);
+        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.design_doctor_list,parent,false);
         return new RecyclerViewViewHolder(rootView);
     }
 
@@ -74,6 +74,7 @@ public class MedicRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             dr_card_name = itemView.findViewById(R.id.dr_card_name);
             dr_card_speciality = itemView.findViewById(R.id.dr_card_place);
             dr_card_image = itemView.findViewById(R.id.dr_card_image);
+            button = itemView.findViewById(R.id.book_btn);
 
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
