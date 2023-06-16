@@ -1,5 +1,6 @@
 package com.eme22.citasApp.view;
 
+import static com.eme22.citasApp.util.Constants.EXTRA_APPOINTMENT;
 import static com.eme22.citasApp.util.Constants.EXTRA_USER;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,10 +47,15 @@ public class HistoryActivity extends AppCompatActivity {
 
         historyRecyclerViewAdapter = new HistoryRecyclerViewAdapter(cartItem -> {
             Intent intent = new Intent(HistoryActivity.this, HistoryInfoActivity.class);
+            sendAppointment(cartItem, intent);
             sendUser(user, intent);
             startActivity(intent);
         });
         binding.historyCards.setAdapter(historyRecyclerViewAdapter);
+
+        doctorListViewModel.getListEmptyMutableLiveData().observe(this, aBoolean -> binding.emptyText2.setVisibility(aBoolean ? View.VISIBLE : View.GONE));
+
+        doctorListViewModel.getLoadingMutableLivedata().observe(this, aBoolean -> binding.searchDateProgressBar2.setVisibility(aBoolean ? View.VISIBLE : View.GONE));
 
         doctorListViewModel.getUserMutableLiveData().observe(this, userListUpdateObserver);
 
@@ -59,7 +65,11 @@ public class HistoryActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_USER, patient);
     }
 
-    Observer<ArrayList<Appointment>> userListUpdateObserver = (Observer<ArrayList<Appointment>>) userArrayList -> {
+    static void sendAppointment(Appointment patient, Intent intent) {
+        intent.putExtra(EXTRA_APPOINTMENT, patient);
+    }
+
+    Observer<ArrayList<Appointment>> userListUpdateObserver = userArrayList -> {
 
         if (userArrayList.isEmpty()) {
 

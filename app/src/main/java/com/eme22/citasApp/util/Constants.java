@@ -7,4 +7,6 @@ public class Constants {
     public static final String EXTRA_MEDIC = "com.eme22.citasApp.MEDIC";
     public static final String EXTRA_SPECIALITY = "com.eme22.citasApp.SPECIALITY";
     public static final String EXTRA_MODE = "com.eme22.citasApp.MODE";
+
+    public static final String EXTRA_APPOINTMENT = "com.eme22.citasApp.APPOINTMENT";
 }

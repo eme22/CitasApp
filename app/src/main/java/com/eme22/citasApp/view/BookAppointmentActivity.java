@@ -5,14 +5,15 @@ import static com.eme22.citasApp.util.Constants.EXTRA_USER;
 import static com.eme22.citasApp.view.DoctorListActivity.sendAppointmentDate;
 import static com.eme22.citasApp.view.DoctorListActivity.sendMedic;
 import static com.eme22.citasApp.view.DoctorListActivity.sendUser;
+import static com.eme22.citasApp.view.HistoryActivity.sendAppointment;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -23,9 +24,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.eme22.citasApp.adapter.AppointmentsRecyclerViewAdapter;
 import com.eme22.citasApp.adapter.MedicRecyclerViewAdapter;
 import com.eme22.citasApp.databinding.ActivityBookAppointmentBinding;
+import com.eme22.citasApp.model.pojo.appointments.Appointment;
 import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.util.CustomDatePickerDialog;
+import com.eme22.citasApp.util.Pair;
 import com.eme22.citasApp.viewmodel.BookAppointmentViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -35,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +53,9 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
     private AppointmentsRecyclerViewAdapter recyclerViewAdapter;
 
-    final Calendar calendar = Calendar.getInstance();
+    private Integer oldposition;
+    private Patient user;
+    private Medic medic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,24 +67,19 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
+        recyclerViewAdapter = new AppointmentsRecyclerViewAdapter(onItemClicked);
 
+        binding.drAppPlace2.setAdapter(recyclerViewAdapter);
 
-        Patient user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
+        user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
 
-        Medic medic = (Medic) getIntent().getSerializableExtra(EXTRA_MEDIC);
+        medic = (Medic) getIntent().getSerializableExtra(EXTRA_MEDIC);
 
         bookAppointmentViewModel.init(medic.getId());
 
         bookAppointmentViewModel.getReady().observe(this, aBoolean -> {
             if (aBoolean) {
                 initData();
-            }
-        });
-
-        bookAppointmentViewModel.getSelectedDate().observe(this, new Observer<LocalDateTime>() {
-            @Override
-            public void onChanged(LocalDateTime localDateTime) {
-
             }
         });
 
@@ -97,8 +98,10 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
             picker.addOnPositiveButtonClickListener(selection -> {
 
-                calendar.setTimeInMillis(selection);
-                bookAppointmentViewModel.getDate().setValue(calendar);
+                if (bookAppointmentViewModel.getDate().getValue() == null || !bookAppointmentViewModel.getDate().isInitialized())
+                    bookAppointmentViewModel.getDate().setValue(Calendar.getInstance());
+
+                bookAppointmentViewModel.getDate().getValue().setTimeInMillis(selection);
 
                 updateLabel();
                 loadData();
@@ -120,25 +123,46 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         bookAppointmentViewModel.loadAppointment(medic.getId());
 
-        recyclerViewAdapter = new AppointmentsRecyclerViewAdapter((cartItem, view) -> {
+
+        binding.drAppBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProcessAppointmentActivity.class);
-            Patient user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
-            sendUser(user, intent);
-            sendAppointmentDate(cartItem, intent);
+            Appointment appointment = generateAppointment();
+            sendAppointment(appointment, intent);
             startActivity(intent);
         });
 
-        binding.drAppPlace2.setAdapter(recyclerViewAdapter);
 
-        bookAppointmentViewModel.getAvaibleDates().observe(this, new Observer<>() {
-            @Override
-            public void onChanged(ArrayList<Pair<LocalDateTime, Boolean>> localDateTimes) {
+        bookAppointmentViewModel.getAvaibleDates().observe(this, localDateTimes -> {
+
+            if (!localDateTimes.isEmpty()) {
+                System.out.println("cambiando dataset a"+ Arrays.toString(localDateTimes.toArray()));
+
                 recyclerViewAdapter.updateAppointmentList(localDateTimes);
+
+                runOnUiThread(() ->  recyclerViewAdapter.notifyDataSetChanged());
             }
+
         });
 
         bookAppointmentViewModel.getSelectedDate().observe(this, localDateTime -> binding.drAppBtn.setEnabled(localDateTime != null));
 
+    }
+
+    private Appointment generateAppointment() {
+
+        Appointment appointment = new Appointment();
+
+        appointment.setDate(bookAppointmentViewModel.getSelectedDate().getValue());
+
+        appointment.setDescription(binding.remarks.getText().toString());
+
+        appointment.setMedicByMedicId(medic);
+
+        appointment.setPatientByPatientId(user);
+
+        appointment.setFinished(false);
+
+        return appointment;
     }
 
     TextWatcher afterTextChangedListener = new TextWatcher() {
@@ -158,6 +182,30 @@ public class BookAppointmentActivity extends AppCompatActivity {
         }
     };
 
+    AppointmentsRecyclerViewAdapter.OnItemClicked onItemClicked = new AppointmentsRecyclerViewAdapter.OnItemClicked() {
+        @Override
+        public void onItemClick(int position, LocalDateTime cartItem, View current) {
+
+            if (oldposition != null) {
+                recyclerViewAdapter.getAppointmentArrayList().get(oldposition).second.second = false;
+
+            }
+
+            oldposition = position;
+
+            recyclerViewAdapter.getAppointmentArrayList().get(position).second.second = true;
+
+
+            bookAppointmentViewModel.getSelectedDate().setValue(cartItem);
+
+            recyclerViewAdapter.updateAppointmentList(recyclerViewAdapter.getAppointmentArrayList());
+
+            runOnUiThread(() ->  recyclerViewAdapter.notifyDataSetChanged());
+
+
+        }
+    };
+
     /**
     DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
         calendar.set(Calendar.YEAR, year);
@@ -170,7 +218,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
     private void updateLabel(){
         String myFormat="MM/dd/yy";
         SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.getDefault());
-        binding.drAppDate.setText(dateFormat.format(calendar.getTime()));
+        binding.drAppDate.setText(dateFormat.format(bookAppointmentViewModel.getDate().getValue().getTime()));
     }
 
     private void setHorary(boolean enabled){
@@ -182,7 +230,11 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
     private CalendarConstraints.Builder disableExcluded(ArrayList<LocalDate> arrayList) {
         CalendarConstraints.Builder constraintsBuilderRange = new CalendarConstraints.Builder();
-        constraintsBuilderRange.setValidator(new CustomDatePickerDialog(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH), arrayList));
+
+        if (bookAppointmentViewModel.getDate().getValue() == null || !bookAppointmentViewModel.getDate().isInitialized())
+            bookAppointmentViewModel.getDate().setValue(Calendar.getInstance());
+
+        constraintsBuilderRange.setValidator(new CustomDatePickerDialog(bookAppointmentViewModel.getDate().getValue().get(Calendar.YEAR),bookAppointmentViewModel.getDate().getValue().get(Calendar.MONTH),bookAppointmentViewModel.getDate().getValue().get(Calendar.DAY_OF_MONTH), arrayList));
         return constraintsBuilderRange;
     }
 

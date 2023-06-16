@@ -6,6 +6,7 @@ import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.model.pojo.prescriptions.Prescription;
 import com.google.gson.annotations.Expose;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class Appointment{
+public class Appointment implements Serializable {
 	@Expose
 	private LocalDateTime date;
 	@Expose

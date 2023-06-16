@@ -1,18 +1,19 @@
 package com.eme22.citasApp.viewmodel;
 
-import android.util.Pair;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.eme22.citasApp.model.pojo.appointments.Appointment;
 import com.eme22.citasApp.model.pojo.appointments.AppointmentsResponse;
 import com.eme22.citasApp.model.pojo.holiday.HolidaysResponse;
+import com.eme22.citasApp.util.Pair;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     private final MutableLiveData<ArrayList<LocalDate>> holidays = new MutableLiveData<>();
 
-    private final MutableLiveData<ArrayList<Pair<LocalDateTime, Boolean>>> avaibleDates = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>>> avaibleDates = new MutableLiveData<>();
 
     private final MutableLiveData<LocalDateTime> selectedDate = new MutableLiveData<>();
 
@@ -40,7 +41,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
         return holidays;
     }
 
-    public MutableLiveData<ArrayList<Pair<LocalDateTime, Boolean>>> getAvaibleDates() {
+    public MutableLiveData<ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>>> getAvaibleDates() {
         return avaibleDates;
     }
 
@@ -85,7 +86,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     public void loadAppointment(int id) {
 
-        api.getTodayAppointments(id).enqueue(new Callback<AppointmentsResponse>() {
+        api.getTodayAppointments(id).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<AppointmentsResponse> call, Response<AppointmentsResponse> response) {
                 loadingMutableLivedata.setValue(false);
@@ -93,7 +94,17 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
                     AppointmentsResponse appointmentsResponse = response.body();
 
-                    avaibleDates.setValue(parseDates(appointmentsResponse.getEmbedded().getAppointments().stream().map(appointment -> appointment.getDate()).collect(Collectors.toCollection(ArrayList::new))));
+                    ArrayList<LocalDateTime> a = appointmentsResponse.getEmbedded().getAppointments().stream().map(appointment -> appointment.getDate()).collect(Collectors.toCollection(ArrayList::new));
+
+                    System.out.println("Data collected: ");
+
+                    System.out.println(Arrays.toString(a.toArray()));
+
+                    ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> s = parseDates(a);
+
+                    System.out.println(Arrays.toString(s.toArray()));
+
+                    avaibleDates.setValue( s );
 
                     listEmptyMutableLiveData.setValue(itemsArrayList.isEmpty());
 
@@ -110,7 +121,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     }
 
-    private ArrayList<Pair<LocalDateTime, Boolean>> parseDates(ArrayList<LocalDateTime> collect) {
+    private ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> parseDates(ArrayList<LocalDateTime> collect) {
         return getRealSlots(date.getValue().getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), collect);
     }
 
@@ -131,9 +142,9 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     }
 
-    private ArrayList<Pair<LocalDateTime, Boolean>> getRealSlots(LocalDate date, ArrayList<LocalDateTime> occupedDates) {
+    private ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> getRealSlots(LocalDate date, ArrayList<LocalDateTime> occupedDates) {
 
-        return getTodaySlots(date).stream().map(localDateTime -> new Pair<>(localDateTime, !occupedDates.contains(localDateTime))).collect(Collectors.toCollection(ArrayList::new));
+        return getTodaySlots(date).stream().map(localDateTime -> new Pair<>(localDateTime, new Pair<>(!occupedDates.contains(localDateTime), false))).collect(Collectors.toCollection(ArrayList::new));
 
     }
 

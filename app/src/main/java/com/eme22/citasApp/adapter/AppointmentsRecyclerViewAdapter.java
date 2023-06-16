@@ -1,34 +1,42 @@
 package com.eme22.citasApp.adapter;
 
-import android.util.Pair;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eme22.citasApp.R;
-import com.eme22.citasApp.model.pojo.medics.Medic;
-import com.squareup.picasso.Picasso;
+import com.eme22.citasApp.util.Pair;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+
     private final AppointmentsRecyclerViewAdapter.OnItemClicked listener;
-    private ArrayList<Pair<LocalDateTime, Boolean>> AppointmentArrayList;
+    private ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> AppointmentArrayList;
+
+    public ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> getAppointmentArrayList() {
+        return AppointmentArrayList;
+    }
+
+    public void setAppointmentArrayList(ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> appointmentArrayList) {
+        AppointmentArrayList = appointmentArrayList;
+    }
 
     public AppointmentsRecyclerViewAdapter(AppointmentsRecyclerViewAdapter.OnItemClicked listener) {
         this.listener = listener;
         this.AppointmentArrayList = new ArrayList<>();
     }
 
-    public AppointmentsRecyclerViewAdapter(AppointmentsRecyclerViewAdapter.OnItemClicked listener, ArrayList<Pair<LocalDateTime, Boolean>> appointmentArrayList) {
+    public AppointmentsRecyclerViewAdapter(AppointmentsRecyclerViewAdapter.OnItemClicked listener, ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> appointmentArrayList) {
         this.listener = listener;
         this.AppointmentArrayList = appointmentArrayList;
     }
@@ -44,12 +52,20 @@ public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        Pair<LocalDateTime, Boolean> Appointment = AppointmentArrayList.get(position);
+        Pair<LocalDateTime, Pair<Boolean, Boolean>> Appointment = AppointmentArrayList.get(position);
         RecyclerViewViewHolder viewHolder= (RecyclerViewViewHolder) holder;
 
-        viewHolder.itemView.setEnabled(Appointment.second);
+        System.out.println(Appointment);
+        System.out.println(Appointment.getSecond());
+        System.out.println(Appointment.getSecond().getFirst());
+        viewHolder.itemView.setEnabled(Appointment.getSecond().getFirst());
 
-        viewHolder.date.setText(Appointment.first.getHour()+":"+Appointment.first.getMinute());
+        viewHolder.date.setText(String.format("%02d:%02d", Appointment.first.getHour(),Appointment.first.getMinute()));
+
+        if (Appointment.second.second)
+            viewHolder.itemView.setBackgroundColor(Color.GRAY);
+        else
+            viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
     }
 
@@ -58,7 +74,7 @@ public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
         return AppointmentArrayList.size();
     }
     
-   public void updateAppointmentList(final ArrayList<Pair<LocalDateTime, Boolean>> AppointmentArrayList) {
+   public void updateAppointmentList(final ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> AppointmentArrayList) {
         this.AppointmentArrayList.clear();
         this.AppointmentArrayList = AppointmentArrayList;
         notifyDataSetChanged();
@@ -77,7 +93,7 @@ public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
                 if (position != RecyclerView.NO_POSITION) {
 
 
-                    listener.onItemClick(AppointmentArrayList.get(position).first, itemView);
+                    listener.onItemClick(position,AppointmentArrayList.get(position).first, itemView);
                 }
             });
 
@@ -85,7 +101,7 @@ public class AppointmentsRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     }
 
     public interface OnItemClicked {
-        void onItemClick(LocalDateTime cartItem, View current);
+        void onItemClick(int position, LocalDateTime cartItem, View current);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.eme22.citasApp.model.api;
 
+import com.eme22.citasApp.model.pojo.appointments.Appointment;
 import com.eme22.citasApp.model.pojo.appointments.AppointmentsResponse;
 import com.eme22.citasApp.model.pojo.holiday.Holidays;
 import com.eme22.citasApp.model.pojo.holiday.HolidaysResponse;
@@ -12,7 +13,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -45,5 +48,8 @@ public interface Api {
 
     @GET("/holiday/search/findByMedic_Id")
     Call<HolidaysResponse> getMedicHolidays(@Query("id") int id, @Query("page") Integer page, @Query("size") Integer size, @Query("sort")String sort);
+
+    @POST("/appointment/")
+    Call<AppointmentsResponse> appointment(@Body Appointment appointment);
 
 }
