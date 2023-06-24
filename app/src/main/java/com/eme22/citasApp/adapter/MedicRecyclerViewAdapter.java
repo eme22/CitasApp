@@ -48,6 +48,10 @@ public class MedicRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
         viewHolder.dr_card_name.setText(Appointment.getName1()+" "+Appointment.getLastname1());
 
+        viewHolder.dr_card_speciality.setText(Appointment.getSpecialityBySpecId().getName());
+
+        viewHolder.dr_card_exp.setText(String.format("%d", Appointment.getAge()));
+
         Picasso.get().load(Appointment.getImage()).into(((RecyclerViewViewHolder) holder).dr_card_image);
     }
 
@@ -65,7 +69,7 @@ public class MedicRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
 
         ImageView dr_card_image;
-        TextView dr_card_name, dr_card_speciality;
+        TextView dr_card_name, dr_card_speciality, dr_card_exp;
 
         Button button;
 
@@ -74,6 +78,7 @@ public class MedicRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             dr_card_name = itemView.findViewById(R.id.dr_card_name);
             dr_card_speciality = itemView.findViewById(R.id.dr_card_place);
             dr_card_image = itemView.findViewById(R.id.dr_card_image);
+            dr_card_exp = itemView.findViewById(R.id.dr_card_exp);
             button = itemView.findViewById(R.id.book_btn);
 
             button.setOnClickListener(v -> {
