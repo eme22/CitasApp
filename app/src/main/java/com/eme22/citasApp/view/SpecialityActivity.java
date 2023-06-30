@@ -64,9 +64,5 @@ public class SpecialityActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_SPECIALITY, patient);
     }
 
-    Observer<ArrayList<Speciality>> specialityLivedataObserver = (Observer<ArrayList<Speciality>>) userArrayList -> {
-
-        specialityRecyclerViewAdapter.updateAppointmentList(userArrayList);
-
-    };
+    Observer<ArrayList<Speciality>> specialityLivedataObserver = userArrayList -> specialityRecyclerViewAdapter.updateAppointmentList(userArrayList);
 }

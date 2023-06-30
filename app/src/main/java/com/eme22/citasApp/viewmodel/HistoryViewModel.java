@@ -2,8 +2,10 @@ package com.eme22.citasApp.viewmodel;
 
 import com.eme22.citasApp.model.pojo.appointments.Appointment;
 import com.eme22.citasApp.model.pojo.appointments.AppointmentsResponse;
+import com.eme22.citasApp.model.pojo.medics.Medic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,13 +21,13 @@ public class HistoryViewModel extends RecyclerViewViewModel<Appointment> {
 
         api.getHistory(dni).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<AppointmentsResponse> call, Response<AppointmentsResponse> response) {
+            public void onResponse(Call<List<Appointment>> call, Response<List<Appointment>> response) {
 
                 if (response.isSuccessful()) {
 
-                    AppointmentsResponse appointmentsResponse = response.body();
+                    List<Appointment> appointmentsResponse = response.body();
 
-                    itemsArrayList = new ArrayList<>(appointmentsResponse.getEmbedded().getAppointments());
+                    itemsArrayList = new ArrayList<>(appointmentsResponse);
 
                 }
 
@@ -34,7 +36,7 @@ public class HistoryViewModel extends RecyclerViewViewModel<Appointment> {
             }
 
             @Override
-            public void onFailure(Call<AppointmentsResponse> call, Throwable t) {
+            public void onFailure(Call<List<Appointment>> call, Throwable t) {
                 t.printStackTrace();
             }
         });

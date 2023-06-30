@@ -4,11 +4,12 @@ import com.eme22.citasApp.model.pojo.commons.Links;
 import com.eme22.citasApp.model.pojo.prescriptions.Prescription;
 import com.google.gson.annotations.Expose;
 
+import java.io.Serializable;
 import java.util.List;
 import lombok.Data;
 
 @Data
-public class Medication{
+public class Medication implements Serializable {
 	@Expose
 	private int number;
 	@Expose

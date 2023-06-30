@@ -21,6 +21,12 @@ public class CustomDatePickerDialog implements CalendarConstraints.DateValidator
     ArrayList<LocalDate> mExcluded;
 
     public CustomDatePickerDialog(int year, int month, int dayOfWeek, ArrayList<LocalDate> excluded) {
+
+        System.out.println(year);
+        System.out.println(month);
+        System.out.println(dayOfWeek);
+        System.out.println(excluded);
+
         mYear = year;
         mMonth = month;
         mDayOfWeek = dayOfWeek;

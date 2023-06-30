@@ -4,9 +4,8 @@ package com.eme22.citasApp.viewmodel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.eme22.citasApp.model.pojo.appointments.Appointment;
-import com.eme22.citasApp.model.pojo.appointments.AppointmentsResponse;
-import com.eme22.citasApp.model.pojo.holiday.HolidaysResponse;
-import com.eme22.citasApp.util.Pair;
+import com.eme22.citasApp.model.pojo.holiday.Holidays;
+import com.eme22.citasApp.model.pojo.medics.Medic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +14,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -29,7 +29,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     private final MutableLiveData<ArrayList<LocalDate>> holidays = new MutableLiveData<>();
 
-    private final MutableLiveData<ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>>> avaibleDates = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<LocalDateTime>> avaibleDates = new MutableLiveData<>();
 
     private final MutableLiveData<LocalDateTime> selectedDate = new MutableLiveData<>();
 
@@ -41,7 +41,7 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
         return holidays;
     }
 
-    public MutableLiveData<ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>>> getAvaibleDates() {
+    public MutableLiveData<ArrayList<LocalDateTime>> getAvaibleDates() {
         return avaibleDates;
     }
 
@@ -51,17 +51,22 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     public MutableLiveData<Calendar> getDate() { return date;}
 
-    public void init(int id) {
+    public void init(Medic medic) {
+
+        holidays.setValue(medic.getHolidays().stream().map(Holidays::getDate).collect(Collectors.toCollection(ArrayList::new)));
+        ready.setValue(true);
+
+        /**
         api.getMedicHolidays(id, null, null, null).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<HolidaysResponse> call, Response<HolidaysResponse> response) {
+            public void onResponse(Call<List<Holidays>> call, Response<List<Holidays>> response) {
                 if (response.isSuccessful()) {
 
-                    HolidaysResponse appointmentsResponse = response.body();
+                    List<Holidays> appointmentsResponse = response.body();
 
                     ArrayList<LocalDate> date;
 
-                    date = appointmentsResponse.getEmbedded().getHolidays().stream().map(date1 -> LocalDate.parse(date1.getDate())).collect(Collectors.toCollection(ArrayList::new));
+                    date = appointmentsResponse.stream().map(Holidays::getDate).collect(Collectors.toCollection(ArrayList::new));
 
                     holidays.setValue(date);
 
@@ -76,11 +81,12 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
             }
 
             @Override
-            public void onFailure(Call<HolidaysResponse> call, Throwable t) {
+            public void onFailure(Call<List<Holidays>> call, Throwable t) {
                 t.printStackTrace();
                 ready.setValue(true);
             }
         });
+         **/
     }
 
 
@@ -88,19 +94,19 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
         api.getTodayAppointments(id).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<AppointmentsResponse> call, Response<AppointmentsResponse> response) {
+            public void onResponse(Call<List<Appointment>> call, Response<List<Appointment>> response) {
                 loadingMutableLivedata.setValue(false);
                 if (response.isSuccessful()) {
 
-                    AppointmentsResponse appointmentsResponse = response.body();
+                    List<Appointment> appointmentsResponse = response.body();
 
-                    ArrayList<LocalDateTime> a = appointmentsResponse.getEmbedded().getAppointments().stream().map(appointment -> appointment.getDate()).collect(Collectors.toCollection(ArrayList::new));
+                    ArrayList<LocalDateTime> a = appointmentsResponse.stream().map(appointment -> appointment.getDate()).collect(Collectors.toCollection(ArrayList::new));
 
                     System.out.println("Data collected: ");
 
                     System.out.println(Arrays.toString(a.toArray()));
 
-                    ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> s = parseDates(a);
+                    ArrayList<LocalDateTime> s = parseDates(a);
 
                     System.out.println(Arrays.toString(s.toArray()));
 
@@ -114,14 +120,14 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
             }
 
             @Override
-            public void onFailure(Call<AppointmentsResponse> call, Throwable t) {
+            public void onFailure(Call<List<Appointment>> call, Throwable t) {
 
             }
         });
 
     }
 
-    private ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> parseDates(ArrayList<LocalDateTime> collect) {
+    private ArrayList<LocalDateTime> parseDates(ArrayList<LocalDateTime> collect) {
         return getRealSlots(date.getValue().getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), collect);
     }
 
@@ -142,9 +148,9 @@ public class BookAppointmentViewModel extends RecyclerViewViewModel<Appointment>
 
     }
 
-    private ArrayList<Pair<LocalDateTime, Pair<Boolean, Boolean>>> getRealSlots(LocalDate date, ArrayList<LocalDateTime> occupedDates) {
+    private ArrayList<LocalDateTime> getRealSlots(LocalDate date, ArrayList<LocalDateTime> occupedDates) {
 
-        return getTodaySlots(date).stream().map(localDateTime -> new Pair<>(localDateTime, new Pair<>(!occupedDates.contains(localDateTime), false))).collect(Collectors.toCollection(ArrayList::new));
+        return getTodaySlots(date).stream().filter( localDateTime -> !occupedDates.contains(localDateTime)).collect(Collectors.toCollection(ArrayList::new));
 
     }
 

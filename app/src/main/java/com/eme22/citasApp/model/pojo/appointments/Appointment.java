@@ -1,19 +1,25 @@
 package com.eme22.citasApp.model.pojo.appointments;
 
+import androidx.annotation.NonNull;
+
 import com.eme22.citasApp.model.pojo.commons.Links;
 import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.model.pojo.prescriptions.Prescription;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString
 public class Appointment implements Serializable {
 	@Expose
 	private LocalDateTime date;
@@ -35,4 +41,5 @@ public class Appointment implements Serializable {
 	private Links links;
 	@Expose
 	private int id;
+
 }

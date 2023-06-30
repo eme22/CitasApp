@@ -13,6 +13,7 @@ import com.eme22.citasApp.R;
 import com.eme22.citasApp.model.pojo.appointments.Appointment;
 
 import java.text.MessageFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -46,7 +47,7 @@ public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         Appointment Appointment = AppointmentArrayList.get(position);
         RecyclerViewViewHolder viewHolder= (RecyclerViewViewHolder) holder;
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         //String a = getText(R.string.history_message, format.format(Appointment.getDate()), Appointment.getMedicByMedicId().getAreaByAreaId().getName());
         //viewHolder.card_title.setText(a);

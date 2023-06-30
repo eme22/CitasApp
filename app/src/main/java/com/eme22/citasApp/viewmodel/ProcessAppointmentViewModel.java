@@ -22,14 +22,14 @@ public class ProcessAppointmentViewModel extends RecyclerViewViewModel<Appointme
 
         api.appointment(appointment).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<AppointmentsResponse> call, Response<AppointmentsResponse> response) {
+            public void onResponse(Call<Appointment> call, Response<Appointment> response) {
                 if (response.isSuccessful()) {
                     sended.setValue(true);
                 }
             }
 
             @Override
-            public void onFailure(Call<AppointmentsResponse> call, Throwable t) {
+            public void onFailure(Call<Appointment> call, Throwable t) {
 
             }
         });

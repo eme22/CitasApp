@@ -13,8 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <include
-            layout="@layout/main_toolbar" />
+        <include layout="@layout/main_toolbar" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,11 +29,26 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="13dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
             android:layout_marginLeft="7dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
             android:background="#c0c0c0" />
+
+        <ProgressBar
+            android:id="@+id/searchDateProgressBar3"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8px" />
+
+        <TextView
+            android:id="@+id/emptyView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8sp"
+            android:text="No tiene ninguna cita pendiente"
+            android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/appointments_recycler"

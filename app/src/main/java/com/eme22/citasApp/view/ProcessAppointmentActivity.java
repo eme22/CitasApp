@@ -1,11 +1,14 @@
 package com.eme22.citasApp.view;
 
+import static com.eme22.citasApp.util.Constants.EXTRA_APPOINTMENT;
 import static com.eme22.citasApp.util.Constants.EXTRA_MEDIC;
 import static com.eme22.citasApp.util.Constants.EXTRA_USER;
+import static com.eme22.citasApp.view.DoctorListActivity.sendUser;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.eme22.citasApp.model.pojo.User;
 import com.eme22.citasApp.model.pojo.appointments.Appointment;
 import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.eme22.citasApp.model.pojo.patients.Patient;
@@ -45,14 +48,20 @@ public class ProcessAppointmentActivity extends AppCompatActivity {
 
         bookAppointmentViewModel = new ViewModelProvider(this).get(ProcessAppointmentViewModel.class);
 
+
+        Patient user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
+
         binding.fab.setOnClickListener(v -> {
             Intent i=new Intent(this, MainActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            sendUser(user, i);
             startActivity(i);
         });
 
 
-        Appointment time = (Appointment) getIntent().getSerializableExtra("aaaAP");
+        Appointment time = (Appointment) getIntent().getSerializableExtra(EXTRA_APPOINTMENT);
+
+        System.out.println("Appointment: ["+ time.toString() +"]");
 
         bookAppointmentViewModel.submitData(time);
 

@@ -8,6 +8,7 @@ import com.eme22.citasApp.model.pojo.specialities.SpecialitiesResponse;
 import com.eme22.citasApp.model.pojo.specialities.Speciality;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,15 +17,15 @@ import retrofit2.Response;
 public class DoctorListViewModel extends RecyclerViewViewModel<Medic> {
 
     public void init(Speciality speciality) {
-        Callback<MedicsResponse> callback = new Callback<>() {
+        Callback<List<Medic>> callback = new Callback<>() {
             @Override
-            public void onResponse(Call<MedicsResponse> call, Response<MedicsResponse> response) {
+            public void onResponse(Call<List<Medic>> call, Response<List<Medic>> response) {
                 loadingMutableLivedata.setValue(false);
                 if (response.isSuccessful()) {
 
-                    MedicsResponse appointmentsResponse = response.body();
+                    List<Medic> appointmentsResponse = response.body();
 
-                    itemsArrayList = new ArrayList<>(appointmentsResponse.getEmbedded().getMedics());
+                    itemsArrayList = new ArrayList<>(appointmentsResponse);
 
                     listEmptyMutableLiveData.setValue(itemsArrayList.isEmpty());
 
@@ -34,7 +35,7 @@ public class DoctorListViewModel extends RecyclerViewViewModel<Medic> {
             }
 
             @Override
-            public void onFailure(Call<MedicsResponse> call, Throwable t) {
+            public void onFailure(Call<List<Medic>> call, Throwable t) {
                 loadingMutableLivedata.setValue(false);
                 t.printStackTrace();
             }
@@ -47,7 +48,7 @@ public class DoctorListViewModel extends RecyclerViewViewModel<Medic> {
         }
         else {
 
-            api.getMedics(0, Integer.MAX_VALUE, null).enqueue(callback);
+            api.getMedics().enqueue(callback);
 
         }
         loadingMutableLivedata.setValue(true);

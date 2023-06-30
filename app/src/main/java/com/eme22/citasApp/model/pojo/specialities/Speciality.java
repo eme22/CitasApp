@@ -10,16 +10,13 @@ import lombok.Data;
 
 @Data
 public class Speciality implements Serializable {
-	@Expose
-	private List<Medic> medicsById;
+
 	@Expose
 	private String name;
 	@Expose
 	private String description;
 	@Expose
 	private String image;
-	@Expose
-	private Links links;
 	@Expose
 	private int id;
 }

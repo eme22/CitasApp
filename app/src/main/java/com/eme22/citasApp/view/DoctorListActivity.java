@@ -1,6 +1,7 @@
 package com.eme22.citasApp.view;
 
 import static com.eme22.citasApp.util.Constants.EXTRA_MEDIC;
+import static com.eme22.citasApp.util.Constants.EXTRA_SPECIALITY;
 import static com.eme22.citasApp.util.Constants.EXTRA_USER;
 
 import android.content.Intent;
@@ -17,8 +18,10 @@ import com.eme22.citasApp.adapter.MedicRecyclerViewAdapter;
 import com.eme22.citasApp.databinding.ActivityDoctorListBinding;
 import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.eme22.citasApp.model.pojo.patients.Patient;
+import com.eme22.citasApp.model.pojo.specialities.Speciality;
 import com.eme22.citasApp.viewmodel.DoctorListViewModel;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -29,6 +32,8 @@ public class DoctorListActivity extends AppCompatActivity {
     private ActivityDoctorListBinding binding;
 
     private MedicRecyclerViewAdapter recyclerViewAdapter;
+    private Patient user;
+    private Speciality speciality;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +43,9 @@ public class DoctorListActivity extends AppCompatActivity {
 
         doctorListViewModel = new ViewModelProvider(this).get(DoctorListViewModel.class);
 
-        Patient user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
+        user = (Patient) getIntent().getSerializableExtra(EXTRA_USER);
+
+        speciality = (Speciality) getIntent().getSerializableExtra(EXTRA_SPECIALITY);
 
         setContentView(binding.getRoot());
 
@@ -56,7 +63,7 @@ public class DoctorListActivity extends AppCompatActivity {
 
         doctorListViewModel.getLoadingMutableLivedata().observe(this, aBoolean -> binding.searchDateProgressBar.setVisibility(aBoolean ? View.VISIBLE : View.GONE));
 
-        doctorListViewModel.init(null);
+        doctorListViewModel.init(speciality);
 
     }
     static void sendUser(Patient patient, Intent intent) {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,15 +18,15 @@ import retrofit2.Response;
 
 public class CalendarViewModel extends RecyclerViewViewModel<Medic> {
     public void selectedDateChanged(int year, int month, int dayOfMonth) {
-        api.getMedicsByDate(LocalDate.of(year, month, dayOfMonth),null, null, null).enqueue(new Callback<>() {
+        api.getMedicsByDate(LocalDate.of(year, month, dayOfMonth)).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<MedicsResponse> call, Response<MedicsResponse> response) {
+            public void onResponse(Call<List<Medic>> call, Response<List<Medic>> response) {
                 loadingMutableLivedata.setValue(false);
                 if (response.isSuccessful()) {
 
-                    MedicsResponse appointmentsResponse = response.body();
+                    List<Medic> appointmentsResponse = response.body();
 
-                    itemsArrayList = new ArrayList<>(appointmentsResponse.getEmbedded().getMedics());
+                    itemsArrayList = new ArrayList<>(appointmentsResponse);
 
                     listEmptyMutableLiveData.setValue(itemsArrayList.isEmpty());
 
@@ -35,7 +36,7 @@ public class CalendarViewModel extends RecyclerViewViewModel<Medic> {
             }
 
             @Override
-            public void onFailure(Call<MedicsResponse> call, Throwable t) {
+            public void onFailure(Call<List<Medic>> call, Throwable t) {
                 loadingMutableLivedata.setValue(false);
                 listEmptyMutableLiveData.setValue(true);
                 t.printStackTrace();

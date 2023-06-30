@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="24px"
-            android:text="Ho hay historial para usted"
+            android:text="No hay historial para usted"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView

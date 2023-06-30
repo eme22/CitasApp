@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,11 +24,18 @@ import com.eme22.citasApp.model.pojo.User;
 import com.eme22.citasApp.viewmodel.LoginViewModel;
 import com.eme22.citasApp.viewmodel.MainViewModel;
 
+import org.apache.commons.codec.binary.Base64;
+
 public class LoginActivity extends AppCompatActivity {
 
     LoginViewModel loginViewModel;
 
     private ActivityLoginBinding binding;
+
+    private static final String PREF_NAME = "userPrefs";
+    private static final String PREFS_LOGIN_USER= "user";
+    private static final String PREFS_LOGIN_PASSWORD= "passwordHash";
+    private SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        //Create a preference file
+        settings = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+
         binding = ActivityLoginBinding.inflate(LayoutInflater.from(this));
 
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
@@ -43,6 +54,18 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         initListeners();
+
+        String userName = settings.getString(PREFS_LOGIN_USER, null);
+        String password = settings.getString(PREFS_LOGIN_PASSWORD, null);
+
+        if (userName != null && password != null ) {
+
+            //password = new String(Base64.decodeBase64(password.getBytes()));
+            binding.loginDni.getEditText().setText(userName);
+            binding.loginPassword.getEditText().setText(password);
+            binding.recordarme.setChecked(true);
+
+        }
 
         //splashScreen.setKeepOnScreenCondition(() -> true);
 
@@ -125,6 +148,18 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.login.setOnClickListener(v -> {
             v.setEnabled(false);
+
+            if (binding.recordarme.isChecked()) {
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(PREFS_LOGIN_USER, binding.loginDni.getEditText().getText().toString());
+                editor.putString(PREFS_LOGIN_PASSWORD, binding.loginPassword.getEditText().getText().toString());
+                editor.apply();
+            } else {
+                SharedPreferences.Editor editor = settings.edit();
+                editor.remove(PREFS_LOGIN_USER);
+                editor.remove(PREFS_LOGIN_PASSWORD);
+            }
+
             this.runOnUiThread(() -> binding.getRoot().post(() -> {
                 binding.loading.setVisibility(View.GONE);
                 binding.loading.setVisibility(View.VISIBLE);

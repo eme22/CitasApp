@@ -7,6 +7,7 @@ import com.eme22.citasApp.model.pojo.specialities.SpecialitiesResponse;
 import com.eme22.citasApp.model.pojo.specialities.Speciality;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,15 +17,15 @@ public class SpecialityViewModel extends RecyclerViewViewModel<Speciality> {
 
     @Override
     public void init() {
-        api.getSpecialities(null, null, null).enqueue(new Callback<>() {
+        api.getSpecialities().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<SpecialitiesResponse> call, Response<SpecialitiesResponse> response) {
+            public void onResponse(Call<List<Speciality>> call, Response<List<Speciality>> response) {
 
                 if (response.isSuccessful()) {
 
-                    SpecialitiesResponse appointmentsResponse = response.body();
+                    List<Speciality> appointmentsResponse = response.body();
 
-                    itemsArrayList = new ArrayList<>(appointmentsResponse.getEmbedded().getSpecialities());
+                    itemsArrayList = new ArrayList<>(appointmentsResponse);
 
                 }
 
@@ -33,7 +34,7 @@ public class SpecialityViewModel extends RecyclerViewViewModel<Speciality> {
             }
 
             @Override
-            public void onFailure(Call<SpecialitiesResponse> call, Throwable t) {
+            public void onFailure(Call<List<Speciality>> call, Throwable t) {
 
             }
         });

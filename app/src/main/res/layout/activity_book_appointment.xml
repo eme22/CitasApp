@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="5dp"
                     android:paddingLeft="5dp"
-                    android:text="AÑOS EXP."
+                    android:text="AÑOS EDAD."
                     tools:ignore="RtlSymmetry" />
 
             </LinearLayout>
@@ -146,15 +146,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.recyclerview.widget.RecyclerView
+                <Spinner
+                    android:id="@+id/spinner1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    tools:listitem="@layout/slot_design"
-                    app:spanCount="3"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="110dp"
-                    android:id="@+id/dr_app_place2" />
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"/>
 
 
                 <LinearLayout
@@ -165,24 +161,27 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginRight="9dp">
 
                         <ImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:scaleType="centerCrop"
+                            android:layout_gravity="center"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="10dp"
-                            android:layout_gravity="center"
+                            android:scaleType="centerCrop"
                             android:src="@drawable/remarks" />
 
                         <EditText
                             android:id="@+id/remarks"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
+                            android:layout_height="150dp"
                             android:background="@drawable/rectangle_outline"
-                            android:hint="Agregar Comentarios Adicionales"
+                            android:gravity="top|start"
+                            android:hint="Agregar Síntomas y Comentarios Adicionales"
+                            android:lines="8"
+                            android:maxLines="10"
                             android:paddingLeft="10dp"
                             android:textSize="15sp" />
 
