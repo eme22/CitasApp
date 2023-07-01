@@ -8,6 +8,7 @@ import com.eme22.citasApp.model.pojo.medics.Medic;
 import com.eme22.citasApp.model.pojo.medics.MedicsResponse;
 import com.eme22.citasApp.model.pojo.patients.Patient;
 import com.eme22.citasApp.model.pojo.patients.PatientsResponse;
+import com.eme22.citasApp.model.pojo.prescriptions.Prescription;
 import com.eme22.citasApp.model.pojo.specialities.SpecialitiesResponse;
 import com.eme22.citasApp.model.pojo.specialities.Speciality;
 
@@ -57,5 +58,8 @@ public interface Api {
 
     @POST("/appointment/")
     Call<Appointment> appointment(@Body Appointment appointment);
+
+    @GET("/prescription/findByPrescrition_AppointmentId")
+    Call<List<Prescription>> getAllPrescriptionByAppointment(@Query("date") int appointmentId);
 
 }
